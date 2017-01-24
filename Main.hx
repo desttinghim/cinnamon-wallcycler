@@ -38,18 +38,7 @@ class Main extends CommandLine {
 	}
 
 	public function runDefault() {
-		if (folder != "") {
-			var isFolder = FileSystem.exists(folder);
-			isFolder = isFolder && FileSystem.isDirectory(folder);
-			if (isFolder) {
-				for (item in FileSystem.readDirectory(folder)) {
-					var path = Path.join([folder, item]);
-					if (!FileSystem.isDirectory(path)) {
-						images.push(path);
-					}
-				}
-			}
-		}
+		evalFolder();
 		if (images.length == 0) help();
 		
 		switchBackground();
@@ -58,12 +47,30 @@ class Main extends CommandLine {
 	}
 
 	private function switchBackground() {
-		var cmd = 'gsettings';
+		evalFolder();
+		
 		var img = images[currentImg++];
 		Sys.println('Switching to $img');
+		
 		if (currentImg >= images.length) currentImg = 0;
+		
 		var args = ['set', 'org.cinnamon.desktop.background', 'picture-uri', 'file://$img'];
 		Sys.command('gsettings', args);
+	}
+
+	private function evalFolder() {
+		if (folder == "") return;
+		
+		var isFolder = FileSystem.exists(folder);
+		isFolder = isFolder && FileSystem.isDirectory(folder);
+		if(!isFolder) return;
+		
+		for (item in FileSystem.readDirectory(folder)) {
+			var path = Path.join([folder, item]);
+			if (FileSystem.isDirectory(path)) continue;
+			if (images.lastIndexOf(path) != -1) continue;
+			images.push(path);
+		}
 	}
 	
 	public static function main() {
