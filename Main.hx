@@ -42,7 +42,12 @@ class Main extends CommandLine {
 			var isFolder = FileSystem.exists(folder);
 			isFolder = isFolder && FileSystem.isDirectory(folder);
 			if (isFolder) {
-				
+				for (item in FileSystem.readDirectory(folder)) {
+					var path = Path.join([folder, item]);
+					if (!FileSystem.isDirectory(path)) {
+						images.push(path);
+					}
+				}
 			}
 		}
 		if (images.length == 0) help();
