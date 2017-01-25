@@ -48,6 +48,7 @@ class Main extends CommandLine {
 
 	private function switchBackground() {
 		evalFolder();
+		checkImages();
 		
 		var img = images[currentImg++];
 		Sys.println('Switching to $img');
@@ -70,6 +71,15 @@ class Main extends CommandLine {
 			if (FileSystem.isDirectory(path)) continue;
 			if (images.lastIndexOf(path) != -1) continue;
 			images.push(path);
+		}
+	}
+
+	private function checkImages() {
+		var imgsCopy = images;
+		for (image in imgsCopy) {
+			if (!FileSystem.exists(image)) {
+				images.remove(image);
+			}
 		}
 	}
 	
